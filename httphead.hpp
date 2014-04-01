@@ -19,6 +19,8 @@ private:
 public:
 	http_head();
 	void parse(std::string head);
+	std::string get_valid_url();
+	bool url_is_valid();
 
 };
 
