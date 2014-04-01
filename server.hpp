@@ -13,8 +13,9 @@
 
 #include <boost/asio.hpp>
 #include <string>
+#include <set>
 #include <boost/noncopyable.hpp>
-//#include "connection.hpp"
+#include "connection.hpp"
 //#include "connection_manager.hpp"
 //#include "request_handler.hpp"
 
@@ -30,7 +31,7 @@ public:
       const std::string& doc_root);
 
   /// Run the server's io_service loop.
-  void run();
+  //void run();
 
 private:
   /// Initiate an asynchronous accept operation.
@@ -42,6 +43,12 @@ private:
   /// Handle a request to stop the server.
   void handle_stop();
 
+  void start(connection_ptr c);
+
+  void stop(connection_ptr c);
+
+  boost::asio::ip::tcp::socket& socket();
+
   /// The io_service used to perform asynchronous operations.
   boost::asio::io_service io_service_;
 
@@ -51,11 +58,13 @@ private:
   /// Acceptor used to listen for incoming connections.
   boost::asio::ip::tcp::acceptor acceptor_;
 
+  std::set<connection_ptr> connections_;
+
   /// The connection manager which owns all live connections.
   //connection_manager connection_manager_;
 
   /// The next connection to be accepted.
-  //connection_ptr new_connection_;
+  connection_ptr new_connection_;
 
   /// The handler for all incoming requests.
   //request_handler request_handler_;
