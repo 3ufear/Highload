@@ -16,6 +16,7 @@
 #include <set>
 #include <boost/noncopyable.hpp>
 #include "connection.hpp"
+#include "http_answer_parser.hpp"
 //#include "connection_manager.hpp"
 //#include "request_handler.hpp"
 
@@ -49,25 +50,17 @@ private:
 
   boost::asio::ip::tcp::socket& socket();
 
-  /// The io_service used to perform asynchronous operations.
   boost::asio::io_service io_service_;
 
-  /// The signal_set is used to register for process termination notifications.
   boost::asio::signal_set signals_;
 
-  /// Acceptor used to listen for incoming connections.
   boost::asio::ip::tcp::acceptor acceptor_;
 
   std::set<connection_ptr> connections_;
 
-  /// The connection manager which owns all live connections.
-  //connection_manager connection_manager_;
+  http_answer_parser parser;
 
-  /// The next connection to be accepted.
   connection_ptr new_connection_;
-
-  /// The handler for all incoming requests.
-  //request_handler request_handler_;
 };
 
 

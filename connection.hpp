@@ -17,6 +17,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include "httphead.hpp"
+#include "http_answer_parser.hpp"
+#include "httpanswer.hpp"
 
 //#include "reply.hpp"
 //#include "request.hpp"
@@ -32,7 +34,7 @@ class connection
 {
 public:
   /// Construct a connection with the given io_service.
-  connection(boost::asio::io_service& io_service);//, request_handler& handler);
+  connection(boost::asio::io_service& io_service, http_answer_parser& parser);//, request_handler& handler);
 
   /// Get the socket associated with the connection.
   boost::asio::ip::tcp::socket& socket();
@@ -62,6 +64,10 @@ private:
 
   /// Buffer for incoming data.
   boost::array<char, 8192> buffer_;
+
+  http_answer_parser answer_parser;
+
+  httpanswer answer;
 
   /// The incoming request.
   //request request_;

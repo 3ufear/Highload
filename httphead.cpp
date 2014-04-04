@@ -22,13 +22,33 @@ http_head::http_head() {
 	// TODO Auto-generated constructor stub
 }
 
-void http_head::parse(std::string str) {
+bool http_head::parse(std::string str) {
 
 	std::stringstream bufer(str);
 	std::string line;
 	getline(bufer,line);
-	int i=1;
-	char * pch;
+	std::vector<std::string> headers;
+	boost::split(headers, line, boost::is_any_of(" \n\r"));
+	std::vector<std::string>::iterator it = headers.begin();
+    type_encoded = *it;
+    it++;
+    path_encoded = *it;
+    std::cout<<"AAAAAAAAAAAAAAAAAAAAAAA: "<<type_encoded<<"AA"<<std::endl;
+    std::cout<<"AAAAAAAAAAAAAAAAAAAAAAA: "<<path_encoded<<"AA"<<std::endl;
+   // protocol = headers[2];
+/*	for(int i=0;i<=int(line.length());i++) {
+		if (line[i] == ' ') {
+			j++;
+		} else if(j==1) {
+			type_encoded+=line[i];
+		} else if (j==2) {
+			path_encoded += line[i];
+		} else if (j==3) {
+			protocol += line[i];
+		}
+	}*/
+
+	/*char * pch;
 	pch = strtok((char*) line.c_str()," ");
 	while (pch != NULL) {
 		if (i==1) {
@@ -40,17 +60,18 @@ void http_head::parse(std::string str) {
 		}
 		i++;
 		pch = strtok (NULL, " ");
-	}
+	}*/
 	std::vector<std::string> tokens;
 
 	 while(getline(bufer,line)) {
 	//	std::cout<<line<<std::endl;//добавить обработку остальных
 		 boost::split(tokens, line, boost::is_any_of(":"));
-		 std::cout<<tokens.size()<<std::endl;
+	//	 std::cout<<tokens.size()<<std::endl;
 	}
-	std::vector<std::string>::iterator it = tokens.begin();
+	//std::vector<std::string>::iterator it = tokens.begin();
     get_valid_url();
 
+    return 1;
 }
 
 bool http_head::url_is_valid() {
@@ -61,8 +82,9 @@ bool http_head::url_is_valid() {
 
 std::string http_head::get_valid_url() {
 	std::cout<<"!!!!!!!!!!"<<url_is_valid()<<std::endl;
+	//std::cout<<"^^^^^^^^"<<path_encoded<<std::endl;
 	std::string valid_url;
-	if (url_is_valid()) {
+	//if (url_is_valid()) {
 		char *ptr;
 		ptr = (char*)path_encoded.c_str();
 		int i=0;
@@ -71,20 +93,20 @@ std::string http_head::get_valid_url() {
 				std::string symbol;
 				symbol.push_back(*(++ptr));
 				symbol.push_back(*(++ptr));
-				std::cout<<"!!!!!!!!!!!"<<std::endl;
-				std::cout<<symbol<<std::endl;
+				std::cout<<"httphead"<<std::endl;
+				//std::cout<<symbol<<std::endl;
 				valid_url.push_back((strtol(symbol.c_str(), 0, 16)));
-				std::cout<<symbol<<std::endl;
+				//std::cout<<symbol<<std::endl;
 				ptr++;
 			} else {
-			valid_url.push_back(*ptr);
-			std::cout<<valid_url<<std::endl;
-			i++;
-			ptr++;
+				valid_url.push_back(*ptr);
+			//	std::cout<<valid_url<<std::endl;
+				i++;
+				ptr++;
 			}
 		}
 
-	} else
-		valid_url = "";
+	//} else
+//		valid_url = "";
 	return valid_url;
 }

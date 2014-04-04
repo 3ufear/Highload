@@ -18,9 +18,10 @@ private:
 	std::string protocol;
 public:
 	http_head();
-	void parse(std::string head);
+	bool parse(std::string head);
 	std::string get_valid_url();
 	bool url_is_valid();
+	//std::string get_value_dimension();
 
 };
 

@@ -15,7 +15,9 @@
 //#include "connection_manager.hpp"
 //#include "request_handler.hpp"
 
-connection::connection(boost::asio::io_service& io_service)  : socket_(io_service), head()  //connection_manager& manager), request_handler& handler) : socket_(io_service)
+connection::connection(boost::asio::io_service& io_service, http_answer_parser& parser)  : socket_(io_service),
+         head(),
+         answer_parser(parser)//connection_manager& manager), request_handler& handler) : socket_(io_service)
     //connection_manager_(manager),
     //request_handler_(handler)
 {
@@ -48,6 +50,19 @@ void connection::handle_read(const boost::system::error_code& e,
    // boost::tie(result, boost::tuples::ignore) = request_parser_.parse(
    //     request_, buffer_.data(), buffer_.data() + bytes_transferred);
 	  head.parse(buffer_.data());
+	  answer_parser.handle(head.get_valid_url(),answer);
+	  boost::asio::async_write(socket_, answer.to_buf(),
+	  		            boost::bind(&connection::handle_write, shared_from_this(),
+	  		              boost::asio::placeholders::error));
+
+/*	  if(head.parse(buffer_.data())) {
+		  //std::string buffer("HTTP/1.1\n200 OK\nContent-Type: text/html\n\n<html> <title>Test</title><BODY>Hello!</BODY></html>\n");
+		  std::vector<boost::asio::const_buffer> buffer;
+		  buffer.push_back("HTTP/1.1\n200 OK\nContent-Type: text/html\n\n");
+		  boost::asio::async_write(socket_, buffer,
+		            boost::bind(&connection::handle_write, shared_from_this(),
+		              boost::asio::placeholders::error));
+	  }*/
 
    /* if (result)
     {
@@ -83,12 +98,14 @@ void connection::handle_write(const boost::system::error_code& e)
   {
     // Initiate graceful connection closure.
     boost::system::error_code ignored_ec;
+
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
   }
 
   if (e != boost::asio::error::operation_aborted)
   {
-    //connection_manager_.stop(shared_from_this());
+	  std::cout<<"Handle STOP"<<std::endl;
+    stop();
   }
 }
 
