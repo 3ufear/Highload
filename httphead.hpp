@@ -22,6 +22,9 @@ public:
 	std::string get_valid_url();
 	bool url_is_valid();
 	//std::string get_value_dimension();
+	std::string get_method() {
+		return type_encoded;
+	}
 
 };
 

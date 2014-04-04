@@ -23,7 +23,7 @@ void http_answer_parser::handle(std::string url, httpanswer& answer){
 			answer.head.push_back({"Content-Type", get_content_type(get_type(url))});
 			std::cout<<"AAAAAAAAAAAAAAAAAAA "<<get_content_type(get_type(url))<<" BBBBBBBBBB "<<get_type(url)<<"QQQQ"<<std::endl;
 
-			answer.head.push_back({"Server","Phil-server"});
+			answer.head.push_back({"Serve","Phil-server"});
 			answer.status = 200;
 		} else {
 			answer.status = 404;
@@ -32,7 +32,7 @@ void http_answer_parser::handle(std::string url, httpanswer& answer){
 			answer.head.push_back({"Connection","close"});
 			answer.head.push_back({"Content-Type", "text/html"});
 			answer.head.push_back({"Server","Phil-server"});
-			answer.content.append("<html><head></head><body><h1>404 NOT FOUND</h1></body></html>");
+			answer.content.append("<html><head></head><body><h1>404 NOT FOUND</h1></body></html>\n");
 		}
 	} else {
 		answer.status = 405;
@@ -40,7 +40,7 @@ void http_answer_parser::handle(std::string url, httpanswer& answer){
 		answer.head.push_back({"Connection","close"});
 		answer.head.push_back({"Content-Type", "text/html"});
 		answer.head.push_back({"Server","Phil-server"});
-		answer.content.append("<html><head></head><body><h1>405 NOT ALLOWED</h1></body></html>");
+		answer.content.append("<html><head></head><body><h1>405 NOT ALLOWED</h1></body></html>\n");
 	}
 	//std::cout<<answer.content<<std::endl;
 }
@@ -60,7 +60,7 @@ std::string http_answer_parser::get_type(std::string url) {
 
 std::string http_answer_parser::get_content_type(std::string type) {
 	if (type == "jpg") {
-        return "image/jpg";
+        return "image/jpeg";
 	} else if(type == "jpeg") {
 		return "image/jpeg";
 	} else if(type == "gif") {

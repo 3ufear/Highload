@@ -8,7 +8,10 @@
 #include "httpanswer.hpp"
 
 httpanswer::httpanswer() {
-
+	content.clear();
+	head.clear();
+	status=0;
+	url.clear();
 }
 
 httpanswer::~httpanswer() {
@@ -48,6 +51,11 @@ std::vector<boost::asio::const_buffer> httpanswer::to_buf() {
 	return buffers;
 }*/
 
+namespace my {
+	const char crlf[] = {'\r','\n'};
+	const char name_value_separator[] = {':',' '};
+}
+
 std::vector<boost::asio::const_buffer> httpanswer::to_buf()
 {
 	std::vector<boost::asio::const_buffer> buffers;
@@ -55,22 +63,33 @@ std::vector<boost::asio::const_buffer> httpanswer::to_buf()
 //buffers.push_back(boost::asio::buffer(_response.status_string));
 
 //std::size_t n = _response.headers.size();
-
-	const char crlf[] = { '\r', '\n' };
-	const char name_value_separator[] = { ':', ' ' };
 //const char crlf[] = "\r\n";
 //const char name_value_separator[] = ": ";
+	std::string header;
+	header.clear();
+	header ="";
 	buffers.push_back(boost::asio::buffer(get_http_status()));
+	//header = get_http_status();
 	std::cout<<get_http_status()<<std::endl;
 	//buffers.push_back(boost::asio::buffer(crlf));
 	for (std::size_t i = 0; i < head.size(); i++) {
 			buffers.push_back(boost::asio::buffer(head[i].name));
-			buffers.push_back(boost::asio::buffer(name_value_separator));
+			buffers.push_back(boost::asio::buffer(my::name_value_separator));
 			buffers.push_back(boost::asio::buffer(head[i].value));
-			buffers.push_back(boost::asio::buffer(crlf));
+			buffers.push_back(boost::asio::buffer(my::crlf));
+		/*	header += head[i].name;
+			std::cout<<"QQ"<<head[i].name<<std::endl;
+			header += ": ";
+			std::cout<<"QQ"<<head[i].value<<std::endl;
+			header += head[i].value;
+			header +="\r\n";
+			//buffers.push_back(boost::asio::buffer(header,header.length()));
+			 * 	header += "\r\n";*/
 	}
 
-	buffers.push_back(boost::asio::buffer(crlf));;
+	std::cout<<header.length()<<std::endl;
+	buffers.push_back(boost::asio::buffer(my::crlf));
+	//buffers.push_back(boost::asio::buffer(crlf));
 //buffer.push_back(boost::asio::buffer("\n"));
 	buffers.push_back(boost::asio::buffer(content));
 

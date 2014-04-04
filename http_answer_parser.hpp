@@ -10,7 +10,7 @@ public:
 		document_root = doc_root;
 	}
 	std::string document_root;
-    void handle(std::string url, httpanswer& answer);
+    void handle(std::string url, std::string method, httpanswer& answer);
     std::string  get_content_type(std::string type);
     std::string get_type(std::string url);
 };

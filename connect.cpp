@@ -50,14 +50,14 @@ void connection::handle_read(const boost::system::error_code& e,
    // boost::tie(result, boost::tuples::ignore) = request_parser_.parse(
    //     request_, buffer_.data(), buffer_.data() + bytes_transferred);
 	  head.parse(buffer_.data());
-	  answer_parser.handle(head.get_valid_url(),answer);
-	  boost::asio::async_write(socket_, answer.to_buf(),
+	  answer_parser.handle(head.get_valid_url(),head.get_method(),answer);
+	  boost::asio::async_write(socket_,answer.to_buf(),
 	  		            boost::bind(&connection::handle_write, shared_from_this(),
 	  		              boost::asio::placeholders::error));
 
 /*	  if(head.parse(buffer_.data())) {
 		  //std::string buffer("HTTP/1.1\n200 OK\nContent-Type: text/html\n\n<html> <title>Test</title><BODY>Hello!</BODY></html>\n");
-		  std::vector<boost::asio::const_buffer> buffer;
+		  std::vector<boost::asio::const_beforebuffer> buffer;
 		  buffer.push_back("HTTP/1.1\n200 OK\nContent-Type: text/html\n\n");
 		  boost::asio::async_write(socket_, buffer,
 		            boost::bind(&connection::handle_write, shared_from_this(),
