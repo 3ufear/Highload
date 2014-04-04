@@ -13,13 +13,13 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
+#include <ctype.h>
 
 http_head::http_head() {
 	host = "";
 	type_encoded = "";
 	path_encoded = "";
 	protocol = "";
-	// TODO Auto-generated constructor stub
 }
 
 bool http_head::parse(std::string str) {
@@ -28,47 +28,47 @@ bool http_head::parse(std::string str) {
 	std::string line;
 	getline(bufer,line);
 	std::vector<std::string> headers;
+	int len = line.length()-1;
+	while(len>0) {
+		if (!isprint(line[len])) {
+			std::cout<<"deleting"<<line[len]<<std::endl;
+			line[len] = '\0';
+		} else {
+			break;
+		}
+		len--;
+	}
+	std::cout<<line<<std::endl;
 	boost::split(headers, line, boost::is_any_of(" \n\r"));
 	std::vector<std::string>::iterator it = headers.begin();
     type_encoded = *it;
+    std::cout<<type_encoded<<std::endl;
     it++;
-    path_encoded = *it;
-    std::cout<<"AAAAAAAAAAAAAAAAAAAAAAA: "<<type_encoded<<"AA"<<std::endl;
-    std::cout<<"AAAAAAAAAAAAAAAAAAAAAAA: "<<path_encoded<<"AA"<<std::endl;
-   // protocol = headers[2];
-/*	for(int i=0;i<=int(line.length());i++) {
-		if (line[i] == ' ') {
-			j++;
-		} else if(j==1) {
-			type_encoded+=line[i];
-		} else if (j==2) {
-			path_encoded += line[i];
-		} else if (j==3) {
-			protocol += line[i];
-		}
-	}*/
-
-	/*char * pch;
-	pch = strtok((char*) line.c_str()," ");
-	while (pch != NULL) {
-		if (i==1) {
-			type_encoded=pch;
-		} else if (i==2) {
-			path_encoded=pch;
-		} else if (i==3) {
-			protocol=pch;
-		}
-		i++;
-		pch = strtok (NULL, " ");
-	}*/
+    std::cout<<"SECIND"<<*it<<std::endl;
+    std::vector<std::string>::iterator it_e = headers.end();
+    it_e--;
+    it_e--;
+    if (type_encoded=="HEAD") {
+    	std::cout<<"SIZE: "<<headers.size()<<std::endl;
+    }
+    if (*it_e != "HTTP/1.1") {
+    	it_e++;
+    }
+    bool first_time=1;
+    while (it != it_e) {
+    	if (first_time) {
+    		first_time = 0;
+    	} else {
+    		path_encoded.append("%20");
+    	}
+     	path_encoded.append(*it);
+    	it++;
+    	std::cout<<path_encoded<<"QQQ"<<std::endl;
+   }
 	std::vector<std::string> tokens;
-
 	 while(getline(bufer,line)) {
-	//	std::cout<<line<<std::endl;//добавить обработку остальных
 		 boost::split(tokens, line, boost::is_any_of(":"));
-	//	 std::cout<<tokens.size()<<std::endl;
 	}
-	//std::vector<std::string>::iterator it = tokens.begin();
     get_valid_url();
 
     return 1;
@@ -81,14 +81,43 @@ bool http_head::url_is_valid() {
 }
 
 std::string http_head::get_valid_url() {
-	std::cout<<"!!!!!!!!!!"<<url_is_valid()<<std::endl;
-	//std::cout<<"^^^^^^^^"<<path_encoded<<std::endl;
 	std::string valid_url;
-	//if (url_is_valid()) {
 		char *ptr;
 		ptr = (char*)path_encoded.c_str();
 		int i=0;
+		bool flag_sl=0;
+		int vhogd=0;
+		int flag_point = 0;
+		bool point = 0;
 		while (i < (int)path_encoded.length()) {
+			if (*ptr == '/'){
+				if (flag_sl) {
+					ptr++;
+				} else {
+					vhogd+=1;
+					flag_sl=1;
+				}
+			} else {
+				flag_sl=0;
+			}
+
+			if (*ptr == '.') {
+				if (flag_point) {
+					ptr++;
+					if (*ptr == '/') {
+						flag_point += 1;
+						ptr++;
+					}
+				}
+
+				flag_point = 1;
+
+			} else {
+				flag_point = 0;
+			}
+			if (*ptr == '?') {
+				break;
+			}
 			if (*ptr == '%') {
 				std::string symbol;
 				symbol.push_back(*(++ptr));
@@ -100,13 +129,14 @@ std::string http_head::get_valid_url() {
 				ptr++;
 			} else {
 				valid_url.push_back(*ptr);
-			//	std::cout<<valid_url<<std::endl;
 				i++;
 				ptr++;
 			}
 		}
-
-	//} else
-//		valid_url = "";
 	return valid_url;
+}
+
+bool http_head::is_in_doc_root(std::string url) {
+
+	return 1;
 }

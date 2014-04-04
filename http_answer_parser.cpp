@@ -3,36 +3,62 @@
 #include "http_answer_parser.hpp"
 #include <fstream>
 
-void http_answer_parser::handle(std::string url, httpanswer& answer){
-	if (url == "/")
+void http_answer_parser::handle(std::string url,std::string method, httpanswer& answer){
+	int a = url.length();
+	std::cout<<"QQ   "<<url[a-1]<<std::endl;
+	bool f403 = 0;
+	if (url[a-1] == '/') {
 		url.append("index.html");
-	if (url != "") {
+		f403 = 1;
+	}
+	std::cout<<method<<std::endl;
+	std::cout<<url<<std::endl;
+	if (url != "" && (method == "GET" || method == "HEAD")) {
 		std::string full_path = document_root + url;
 		std::ifstream fin(full_path.c_str(),std::fstream::in | std::fstream::binary);
 		if (fin.is_open()) {
 			char buf[5000];
+			std::string con;
 			while(fin.read(buf,5000).gcount()>0) {
+				if (method == "HEAD") {
+					con.append(buf,fin.gcount());
+				} else {
 				answer.content.append(buf,fin.gcount());
 				//answer.content.append("");
+				}
 			}
 			fin.close();
 			char str[200];
-			sprintf(str, "%ld", answer.content.size());
+			if (method == "GET") {
+				sprintf(str, "%ld", answer.content.size());
+			} else {
+				sprintf(str, "%ld", con.size());
+			}
 			answer.head.push_back({"Content-Length", str});
 			answer.head.push_back({"Connection","close"});
 			answer.head.push_back({"Content-Type", get_content_type(get_type(url))});
-			std::cout<<"AAAAAAAAAAAAAAAAAAA "<<get_content_type(get_type(url))<<" BBBBBBBBBB "<<get_type(url)<<"QQQQ"<<std::endl;
+			//std::cout<<"AAAAAAAAAAAAAAAAAAA "<<get_content_type(get_type(url))<<" BBBBBBBBBB "<<get_type(url)<<"QQQQ"<<std::endl;
 
-			answer.head.push_back({"Serve","Phil-server"});
+			answer.head.push_back({"Server","Phil-server"});
 			answer.status = 200;
 		} else {
-			answer.status = 404;
-			std::cout<<"!!!!!!!!!!!!1"<<std::endl;
-			answer.head.push_back({"Content-Length", "0"});
-			answer.head.push_back({"Connection","close"});
-			answer.head.push_back({"Content-Type", "text/html"});
-			answer.head.push_back({"Server","Phil-server"});
-			answer.content.append("<html><head></head><body><h1>404 NOT FOUND</h1></body></html>\n");
+			if (f403) {
+				answer.status = 403;
+				//std::cout<<"!!!!!!!!!!!!1"<<std::endl;
+				answer.head.push_back({"Content-Length", "0"});
+				answer.head.push_back({"Connection","close"});
+				answer.head.push_back({"Content-Type", "text/html"});
+				answer.head.push_back({"Server","Phil-server"});
+				answer.content.append("<html><head></head><body><h1>403 FORBIDDEN</h1></body></html>\n");
+			} else {
+				answer.status = 404;
+			//std::cout<<"!!!!!!!!!!!!1"<<std::endl;
+				answer.head.push_back({"Content-Length", "0"});
+				answer.head.push_back({"Connection","close"});
+				answer.head.push_back({"Content-Type", "text/html"});
+				answer.head.push_back({"Server","Phil-server"});
+				answer.content.append("<html><head></head><body><h1>404 NOT FOUND</h1></body></html>\n");
+			}
 		}
 	} else {
 		answer.status = 405;

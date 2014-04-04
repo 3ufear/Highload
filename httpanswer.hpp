@@ -27,7 +27,6 @@ public:
 	std::vector<header> head;
 	std::string content;
 	std::vector<boost::asio::const_buffer> to_buf();
-	void parse_from_url();
 	std::string get_http_status();
 	virtual ~httpanswer();
 };

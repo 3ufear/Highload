@@ -25,6 +25,7 @@ public:
 	std::string get_method() {
 		return type_encoded;
 	}
+	bool is_in_doc_root(std::string url);
 
 };
 
