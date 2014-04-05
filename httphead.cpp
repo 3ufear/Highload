@@ -90,7 +90,7 @@ std::string http_head::get_valid_url() {
 		int flag_point = 0;
 		bool point = 0;
 		while (i < (int)path_encoded.length()) {
-			if (*ptr == '/'){
+			/*if (*ptr == '/'){
 				if (flag_sl) {
 					ptr++;
 				} else {
@@ -114,7 +114,7 @@ std::string http_head::get_valid_url() {
 
 			} else {
 				flag_point = 0;
-			}
+			}*/
 			if (*ptr == '?') {
 				break;
 			}
@@ -133,10 +133,15 @@ std::string http_head::get_valid_url() {
 				ptr++;
 			}
 		}
+	path_encoded = valid_url;
 	return valid_url;
 }
 
 bool http_head::is_in_doc_root(std::string url) {
-
-	return 1;
+	if (url.rfind("../")) {
+		invalid_path = 0;
+	} else {
+		invalid_path = 1;
+	}
+	return invalid_path;
 }

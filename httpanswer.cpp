@@ -61,4 +61,12 @@ std::vector<boost::asio::const_buffer> httpanswer::to_buf()
 
 	return buffers;
 }
+bool httpanswer::is_in_doc_root(std::string url) {
+	if (url.rfind("../")==std::string::npos) {
+		invalid_path = 1;
+	} else {
+		invalid_path = 0;
+	}
+	return invalid_path;
+}
 

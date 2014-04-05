@@ -13,6 +13,7 @@ public:
     void handle(std::string url, std::string method, httpanswer& answer);
     std::string  get_content_type(std::string type);
     std::string get_type(std::string url);
+    std::string get_gmt_time();
 };
 
 #endif /*HTTP_ANSWER_PARSER_*/

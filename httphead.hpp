@@ -17,6 +17,7 @@ private:
 	std::string host;
 	std::string protocol;
 public:
+	int invalid_path;
 	http_head();
 	bool parse(std::string head);
 	std::string get_valid_url();

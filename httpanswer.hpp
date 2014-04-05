@@ -28,6 +28,8 @@ public:
 	std::string content;
 	std::vector<boost::asio::const_buffer> to_buf();
 	std::string get_http_status();
+	int invalid_path;
+	bool is_in_doc_root(std::string url);
 	virtual ~httpanswer();
 };
 
